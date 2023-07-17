@@ -26,19 +26,14 @@ app.get('/movies', async (req,res) => {
 })
 
 // Add a new movie title to the server
-// app.post('/movies', async (req, res) => {
-//   const { title } = req.body;
-//   try {
-//     const client = await pool.connect();
-//     const result = await client.query('INSERT INTO movies (title) VALUES ($1) RETURNING *', [title]);
-//     const newMovie = result.rows[0].title;
-//     res.status(201).json(newMovie);
-//     client.release();
-//   } catch (error) {
-//     console.error('Error executing query', error);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
+app.post('/movies', async (req, res) => {
+  const { id, name } = req.body;
+  knex('movies')
+    .insert({ id, name })
+    .returning('*')
+    .then((movies) => res.status(200).json(movies))
+    .catch((error) => res.status(500).json({ error: 'An error occured creating movie.'}))
+});
 
 // Start the server
 app.listen(port, () => {
